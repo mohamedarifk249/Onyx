@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+
+/* Tailwind v4 class-based dark mode: `dark:` utilities apply whenever an
+   ancestor (in practice <html>) carries the `.dark` class, toggled by the
+   theme switch in the Navbar — see src/context/SiteSettings.jsx. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-blue: #007DBF;
+  --color-brand-orange: #FF8700;
+  --color-brand-navy: #144F6F;
+  --color-brand-light: #DDF3FF;
+  --color-brand-white: #FFFFFF;
+
+  /* Dark-mode surfaces. Kept as separate tokens (rather than remapping the
+     brand colors themselves) because brand-navy is used as BOTH a dark
+     background (Footer) and body text color elsewhere — remapping it would
+     fix one and break the other. */
+  --color-brand-dark-bg: #071726;
+  --color-brand-dark-surface: #0E2436;
+  --color-brand-dark-surface-2: #12314A;
+
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Arabic layout: swap in a typeface with proper Arabic letterforms whenever
+   the page is RTL (see SiteSettings.jsx, which sets dir="rtl" on <html>
+   when the Arabic language is active). Inter/Manrope have no Arabic glyphs. */
+html[dir='rtl'] {
+  --font-heading: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', 'Manrope', sans-serif;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dark body {
+  background-color: var(--color-brand-dark-bg);
+  color: #EAF3FA;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-brand-navy);
+  background-color: var(--color-brand-white);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Reveal-on-scroll utility */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Shared crossfade used for content that swaps in place: partner carousel,
+   the Services tab detail panel, and the page-transition wrapper. */
+@keyframes contentFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Page-transition: replays on every route change (see App.jsx Shell) */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-transition {
+  animation: pageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+  }
+}
+
+/* Infinite customer-logo marquee (see components/LogoMarquee.jsx) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}

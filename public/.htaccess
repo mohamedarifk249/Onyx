@@ -1,0 +1,12 @@
+# Single-page app routing: let the React router (src/router.jsx) handle
+# every path client-side. Without this, a direct visit or refresh on a
+# route like /services or /about returns a 404 on Apache-based shared
+# hosting because there's no matching physical file/folder.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
