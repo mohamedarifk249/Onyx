@@ -2,8 +2,19 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 
 const RouterContext = createContext(null);
 
+// Vite's BASE_URL matches the `base` config in vite.config.js (see there for
+// why: GitHub Pages project sites live under a sub-path). Internally the app
+// always works with root-relative paths ('/', '/services', ...); this strips
+// / re-adds that sub-path so deployment location never leaks into app logic.
+const BASE = import.meta.env.BASE_URL || '/';
+const BASE_PREFIX = BASE === '/' ? '' : BASE.replace(/\/$/, '');
+
 function currentPath() {
-  return window.location.pathname || '/';
+  let p = window.location.pathname || '/';
+  if (BASE_PREFIX && p.startsWith(BASE_PREFIX)) {
+    p = p.slice(BASE_PREFIX.length) || '/';
+  }
+  return p;
 }
 
 /**
@@ -37,14 +48,18 @@ export function RouterProvider({ children }) {
 
   const navigate = useCallback((href) => {
     const url = new URL(href, window.location.origin);
-    const targetPath = url.pathname;
+    const targetPath = url.pathname; // root-relative, e.g. '/services'
     const targetHash = url.hash;
+    // Re-add the deployment sub-path (if any) only in the URL bar; app state
+    // (`path`) always stays root-relative so every component's comparisons
+    // (isActive, data-nav, etc.) work the same regardless of where it's hosted.
+    const browserPath = BASE_PREFIX + (targetPath === '/' ? '/' : targetPath);
 
     if (targetPath !== currentPath()) {
-      window.history.pushState({}, '', targetPath + targetHash);
+      window.history.pushState({}, '', browserPath + targetHash);
       setPath(targetPath);
     } else {
-      window.history.replaceState({}, '', targetPath + targetHash);
+      window.history.replaceState({}, '', browserPath + targetHash);
       const el = targetHash ? document.querySelector(targetHash) : null;
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -66,10 +81,17 @@ export function useRouter() {
 /** Anchor that navigates through the router instead of a full page reload. */
 export function RouterLink({ href, onClick, children, ...rest }) {
   const { navigate } = useRouter();
+  // `href` is always the app's own root-relative path (e.g. '/services');
+  // the rendered attribute additionally carries the deployment sub-path so
+  // the link still resolves correctly for a real hard navigation — right-click
+  // "open in new tab", middle-click, or a crawler that never fires onClick.
+  const isInternal = href.startsWith('/');
+  const resolvedHref = isInternal ? BASE_PREFIX + href : href;
   return (
     <a
-      href={href}
+      href={resolvedHref}
       onClick={(event) => {
+        if (!isInternal) return; // let external/mailto/etc. links behave normally
         event.preventDefault();
         navigate(href);
         onClick?.(event);

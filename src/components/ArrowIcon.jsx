@@ -1,6 +1,4 @@
 export default function ArrowIcon({ className = 'h-7 w-7', bare = false }) {
-  // rtl:scale-x-[-1] mirrors the arrowhead so "forward" still reads correctly
-  // in Arabic, where the natural reading/progression direction is reversed.
   const arrow = (
     <svg
       viewBox="0 0 24 24"
@@ -9,7 +7,7 @@ export default function ArrowIcon({ className = 'h-7 w-7', bare = false }) {
       strokeWidth="2.25"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`rtl:scale-x-[-1] ${bare ? className : 'h-3.5 w-3.5'}`}
+      className={bare ? className : 'h-3.5 w-3.5'}
       aria-hidden="true"
     >
       <path d="M4.5 12h13" />

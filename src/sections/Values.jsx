@@ -1,7 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
-import { useT } from '../i18n/useT';
 
-const VALUE_IDS = ['professionalism', 'integration', 'flexibility', 'capability'];
+const VALUES = [
+  {
+    id: 'professionalism',
+    title: 'Professionalism',
+    desc: 'We uphold the highest standards of technical and ethical conduct in every project we deliver.',
+  },
+  {
+    id: 'integration',
+    title: 'Integration',
+    desc: 'We take on multi-disciplinary projects and deliver added value through our in-house expertise.',
+  },
+  {
+    id: 'flexibility',
+    title: 'Flexibility',
+    desc: 'We tailor every solution to the quality, timeline, and budget your project needs.',
+  },
+  {
+    id: 'capability',
+    title: 'Capability',
+    desc: 'Our engineering teams bring proven, hands-on experience across industrial and commercial sectors.',
+  },
+];
 
 // Matches Tailwind's `lg` breakpoint, which is where this component switches
 // from the mobile pinned-scroll experience to the desktop hover cards.
@@ -77,14 +97,13 @@ function usePinnedStack(count) {
 }
 
 export default function Values() {
-  const t = useT();
   const [hoverIndex, setHoverIndex] = useState(null);
-  const { wrapperRef, active, exitFade } = usePinnedStack(VALUE_IDS.length);
+  const { wrapperRef, active, exitFade } = usePinnedStack(VALUES.length);
 
   return (
     <section className="py-20 lg:mx-auto lg:max-w-7xl lg:px-12 lg:py-24 xl:px-16">
       <h2 className="reveal px-6 text-center font-heading text-3xl font-bold text-brand-blue dark:text-sky-300 sm:text-4xl lg:px-0">
-        {t.values.heading}
+        Our Values
       </h2>
 
       {/* Desktop: hover-to-expand cards (unchanged) */}
@@ -92,12 +111,11 @@ export default function Values() {
         className="reveal mt-12 hidden items-stretch justify-center gap-6 lg:flex"
         onMouseLeave={() => setHoverIndex(null)}
       >
-        {VALUE_IDS.map((id, index) => {
-          const value = t.values.items[id];
+        {VALUES.map((value, index) => {
           const isActive = hoverIndex === index;
           return (
             <div
-              key={id}
+              key={value.id}
               onMouseEnter={() => setHoverIndex(index)}
               onFocus={() => setHoverIndex(index)}
               onBlur={() => setHoverIndex(null)}
@@ -130,18 +148,17 @@ export default function Values() {
       <div className="reveal mx-auto mt-16 hidden h-px w-24 bg-brand-navy/20 dark:bg-white/15 lg:block" />
 
       {/* Mobile: pinned magnetic-scroll stack — cards hold in place while scrolling and hand off one at a time */}
-      <div ref={wrapperRef} className="relative mt-4 lg:hidden" style={{ height: `${VALUE_IDS.length * 100}vh` }}>
+      <div ref={wrapperRef} className="relative mt-4 lg:hidden" style={{ height: `${VALUES.length * 100}vh` }}>
         <div
           className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden bg-white px-6 dark:bg-brand-dark-bg"
           style={{ opacity: exitFade }}
         >
-          {VALUE_IDS.map((id, index) => {
-            const value = t.values.items[id];
+          {VALUES.map((value, index) => {
             const isActive = index === active;
             const isPast = index < active;
             return (
               <div
-                key={id}
+                key={value.id}
                 aria-hidden={!isActive}
                 className="absolute inset-x-6 flex max-w-md flex-col items-center justify-center rounded-2xl bg-brand-blue px-8 py-14 text-center shadow-2xl transition-all duration-500 ease-out"
                 style={{
@@ -162,9 +179,9 @@ export default function Values() {
                 </span>
                 <p className="mt-4 text-base leading-relaxed text-white/90">{value.desc}</p>
                 <div className="mt-8 flex items-center gap-1.5">
-                  {VALUE_IDS.map((dotId, dotIndex) => (
+                  {VALUES.map((dot, dotIndex) => (
                     <span
-                      key={dotId}
+                      key={dot.id}
                       className={`h-1.5 rounded-full transition-all duration-300 ${
                         dotIndex === active ? 'w-5 bg-white' : 'w-1.5 bg-white/35'
                       }`}

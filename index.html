@@ -2,9 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>onyx-website</title>
+    <meta
+      name="description"
+      content="Onyx delivers integrated engineering, instrumentation, automation, and calibration solutions for industrial and commercial organizations across Ethiopia. Endress+Hauser Authorized Service Provider."
+    />
+    <title>Onyx | Industrial Engineering &amp; Process Automation</title>
+    <!--
+      GitHub Pages has no server-side rewrites, so a direct visit or refresh
+      on a deep link (e.g. /onyx-website/services) 404s before React Router
+      ever runs. public/404.html catches that 404 and bounces here with the
+      real path packed into a query string; this decodes it back into the
+      real URL (via history.replaceState) before src/router.jsx reads
+      window.location, so the site still lands on the right page. Standard
+      "spa-github-pages" technique — https://github.com/rafgraph/spa-github-pages.
+      No-op on any other host (Vercel/Netlify/local dev), since it only acts
+      when the query string starts with "?/".
+    -->
+    <script>
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
   </head>
   <body>
     <div id="root"></div>

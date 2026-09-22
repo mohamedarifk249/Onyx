@@ -1,0 +1,109 @@
+name: Deploy to GitHub Pages
+
+# Builds the Vite/React site and publishes it to GitHub Pages on every push
+# to main. Runs entirely on GitHub's own runners (which have normal npm
+# registry access), so this works even though the site can't be built from
+# inside a locked-down sandbox.
+#
+# One-time setup after pushing this repo:
+#   Settings → Pages → Build and deployment → Source → "GitHub Actions"
+# Nothing else to configure — this workflow figures out the correct base
+# path (root site vs. project sub-path) automatically from the repo name.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compute base path
+        id: base
+        run: |
+          REPO_NAME="${{ github.event.repository.name }}"
+          # A repo literally named <user-or-org>.github.io is a GitHub Pages
+          # "user/organization site" and is served from the domain root; any
+          # other repo is a "project site" served from /<repo-name>/.
+          if [[ "$REPO_NAME" == *.github.io ]]; then
+            echo "base_path=/" >> "$GITHUB_OUTPUT"
+            echo "segment_count=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "base_path=/$REPO_NAME/" >> "$GITHUB_OUTPUT"
+            echo "segment_count=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        env:
+          VITE_BASE_PATH: ${{ steps.base.outputs.base_path }}
+        run: npm run build
+
+      - name: Add SPA fallback (404.html) for deep-link/refresh support
+        run: |
+          cat > dist/404.html << EOF
+          <!doctype html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Onyx</title>
+            <script>
+              // Single Page Apps for GitHub Pages — https://github.com/rafgraph/spa-github-pages
+              // segmentCount = how many path segments are the repo's own base
+              // path (0 for a root user/org site, 1 for a project sub-path)
+              // and must therefore be preserved rather than treated as the
+              // in-app route.
+              var segmentCount = ${{ steps.base.outputs.segment_count }};
+              var l = window.location;
+              l.replace(
+                l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+                l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?/' +
+                l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+                (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+                l.hash
+              );
+            </script>
+          </head>
+          <body></body>
+          </html>
+          EOF
+
+      - name: Upload build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

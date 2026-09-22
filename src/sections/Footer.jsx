@@ -1,17 +1,16 @@
 import onyxLogo from '../assets/images/onyx-logo.png';
 import { RouterLink } from '../router';
-import { useT } from '../i18n/useT';
 
-const NAV_KEYS = ['home', 'services', 'about', 'certifications', 'contact'];
-const HREFS = { home: '/', services: '/services', about: '/about', certifications: '/certifications', contact: '/contact' };
+const NAV_ITEMS = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Certifications', href: '/certifications' },
+  { label: 'Contact', href: '/contact' },
+];
 
-function FacebookIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M13.5 21v-8.06h2.71l.4-3.14h-3.11V7.9c0-.91.25-1.53 1.56-1.53h1.66V3.56C15.9 3.4 15.02 3.32 14 3.32c-2.6 0-4.38 1.59-4.38 4.5v2.48H7v3.14h2.62V21h3.88z" />
-    </svg>
-  );
-}
+const LINKEDIN_URL = 'https://et.linkedin.com/company/onyx-for-engineering-&-integrated-solutions-plc';
+
 function LinkedInIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -29,29 +28,29 @@ function GmailIcon(props) {
 }
 
 const SOCIALS = [
-  { label: 'Facebook', href: '#', Icon: FacebookIcon },
-  { label: 'LinkedIn', href: '#', Icon: LinkedInIcon },
-  { label: 'Email', href: 'mailto:info@onyxethiopia.com', Icon: GmailIcon },
+  { label: 'LinkedIn', href: LINKEDIN_URL, Icon: LinkedInIcon },
+  { label: 'Email', href: 'mailto:contact@onyxethiopia.com', Icon: GmailIcon },
 ];
 
 export default function Footer() {
-  const t = useT();
-
   return (
     <footer className="bg-brand-navy pb-8 pt-16 text-white/80">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:grid-cols-2 lg:grid-cols-4 lg:px-12 xl:px-16">
         <div>
           <img src={onyxLogo} alt="Onyx" className="h-9 w-auto brightness-0 invert" />
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">{t.footer.description}</p>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
+            Engineering, automation and calibration solutions for industrial and commercial organizations across
+            Ethiopia.
+          </p>
         </div>
 
         <div>
-          <h4 className="font-heading text-sm font-bold uppercase tracking-wide text-white">{t.footer.quickLinks}</h4>
+          <h4 className="font-heading text-sm font-bold uppercase tracking-wide text-white">Quick Links</h4>
           <ul className="mt-4 space-y-2">
-            {NAV_KEYS.map((key) => (
-              <li key={key}>
-                <RouterLink href={HREFS[key]} className="text-sm text-white/60 transition-colors duration-300 hover:text-brand-orange">
-                  {t.nav[key]}
+            {NAV_ITEMS.map((item) => (
+              <li key={item.label}>
+                <RouterLink href={item.href} className="text-sm text-white/60 transition-colors duration-300 hover:text-brand-orange">
+                  {item.label}
                 </RouterLink>
               </li>
             ))}
@@ -59,23 +58,24 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-heading text-sm font-bold uppercase tracking-wide text-white">{t.footer.contact}</h4>
+          <h4 className="font-heading text-sm font-bold uppercase tracking-wide text-white">Contact</h4>
           <ul className="mt-4 space-y-2 text-sm text-white/60">
-            <li>{t.contactPage.info.address.lines[0]}</li>
-            <li>{t.contactPage.info.address.lines[1]}</li>
-            <li>{t.contactPage.info.email.lines[0]}</li>
-            <li>{t.contactPage.info.phone.lines[0]}</li>
+            <li>Afework Building, 2nd Floor</li>
+            <li>Addis Ababa, Ethiopia</li>
+            <li>contact@onyxethiopia.com</li>
+            <li>+251 (0) 115 22 6060</li>
           </ul>
         </div>
 
         <div>
-          <h4 className="font-heading text-sm font-bold uppercase tracking-wide text-white">{t.footer.followUs}</h4>
+          <h4 className="font-heading text-sm font-bold uppercase tracking-wide text-white">Follow Us</h4>
           <div className="mt-4 flex gap-3">
             {SOCIALS.map(({ label, href, Icon }) => (
               <a
                 key={label}
                 href={href}
                 aria-label={label}
+                {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-orange"
               >
                 <Icon className="h-4 w-4" />
@@ -86,7 +86,7 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto mt-12 max-w-7xl border-t border-white/10 px-6 pt-6 text-center text-xs text-white/40 lg:px-12 xl:px-16">
-        © {new Date().getFullYear()} Onyx. {t.footer.rights}
+        © {new Date().getFullYear()} Onyx. All rights reserved.
       </div>
     </footer>
   );

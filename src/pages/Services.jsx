@@ -3,7 +3,7 @@ import ArrowIcon from '../components/ArrowIcon';
 import CheckIcon from '../components/CheckIcon';
 import { GaugeIcon, WrenchIcon, SlidersIcon, NetworkIcon } from '../components/ServiceIcons';
 import { RouterLink } from '../router';
-import { useT } from '../i18n/useT';
+import usePageMeta from '../hooks/usePageMeta';
 import instrumentationImg from '../assets/images/services/instrumentation-flowmeter.jpg';
 import engineeringImg from '../assets/images/services/engineering-commissioning.jpg';
 import calibrationImg from '../assets/images/services/calibration-food-grade.jpg';
@@ -20,24 +20,103 @@ const SERVICE_META = {
   automation: { Icon: NetworkIcon, image: automationImg },
 };
 
+const SERVICES = {
+  instrumentation: {
+    tab: 'Instrumentation',
+    title: 'Industrial Instrumentation & Measurement',
+    intro:
+      'We supply and support Endress+Hauser instrumentation and spare parts for industrial process measurement applications, including:',
+    points: [
+      'Flow measurement',
+      'Level measurement',
+      'Pressure measurement',
+      'Temperature measurement',
+      'Process analysis',
+      'Other industrial measurement applications',
+    ],
+    alt: 'Endress+Hauser flowmeter mounted on a test stand',
+  },
+  engineering: {
+    tab: 'Engineering',
+    title: 'Engineering & Project Services',
+    intro: 'We provide the engineering expertise required to implement reliable measurement and automation systems, including:',
+    points: [
+      'Application and instrument selection',
+      'Engineering and system design',
+      'Installation',
+      'Commissioning',
+      'Project implementation',
+      'Technical consultation',
+    ],
+    alt: 'Onyx engineer commissioning a measurement instrument on site',
+  },
+  calibration: {
+    tab: 'Calibration',
+    title: 'Calibration & Measurement Services',
+    intro:
+      'Reliable measurement is critical to industrial processes. Onyx provides specialized measurement services, with on-site digital flowmeter calibration as one of our core capabilities. Our service capabilities also include:',
+    points: ['On-site flowmeter calibration', 'Instrument verification', 'Maintenance', 'Troubleshooting', 'Technical support'],
+    alt: 'Onyx technician calibrating a flow instrument in a food-grade facility',
+  },
+  automation: {
+    tab: 'Automation',
+    title: 'Process Automation & Integrated Solutions',
+    intro: 'We develop and implement solutions that go beyond individual instruments to address broader operational requirements. Our experience includes:',
+    points: [
+      'Automatic Tank Gauging (ATG)',
+      'Process automation',
+      'Monitoring solutions',
+      'Industrial control solutions',
+      'Energy Management Systems (EMS)',
+      'Integrated industrial solutions',
+    ],
+    alt: 'Rooftop tank instrumentation and wiring for an automatic tank gauging installation',
+  },
+};
+
 const GALLERY_IMAGES = [galleryFlowInstall, galleryFieldAdjustment, galleryTankTransmitter];
+const GALLERY_ALTS = [
+  'Flow measurement skid being installed on site',
+  'Onyx engineer adjusting an instrument in the field',
+  'Process transmitter mounted on an industrial tank',
+];
+
+const INDUSTRIES = [
+  'Food & Beverage',
+  'Breweries & Dairy',
+  'Oil & Gas',
+  'Cement',
+  'Chemical & Manufacturing',
+  'Water & Wastewater',
+  'Pharmaceuticals',
+  'Energy',
+  'Other Process Industries',
+];
 
 export default function Services() {
-  const t = useT();
+  usePageMeta(
+    'Services',
+    'Industrial instrumentation, engineering, calibration and process automation services from Onyx — Endress+Hauser Authorized Service Provider in Ethiopia.'
+  );
   const [active, setActive] = useState(0);
   const activeId = SERVICE_IDS[active];
-  const service = t.servicesPage.items[activeId];
+  const service = SERVICES[activeId];
 
   return (
     <>
       {/* Page banner */}
       <section className="bg-brand-light py-16 dark:bg-brand-dark-surface-2 lg:py-20">
         <div className="reveal mx-auto max-w-4xl px-6 text-center lg:px-12 xl:px-16">
-          <p className="font-heading text-sm font-semibold uppercase tracking-widest text-brand-orange">{t.servicesPage.eyebrow}</p>
+          <p className="font-heading text-sm font-semibold uppercase tracking-widest text-brand-orange">What We Do</p>
           <h1 className="mt-3 font-heading text-3xl font-extrabold uppercase leading-tight text-brand-navy dark:text-white sm:text-4xl">
-            {t.servicesPage.title}
+            Services
           </h1>
-          <p className="mt-4 text-base leading-relaxed text-brand-navy/80 dark:text-white/75">{t.servicesPage.intro}</p>
+          <p className="mt-4 text-base leading-relaxed text-brand-navy/80 dark:text-white/75">
+            Our work extends beyond supplying instruments. We support industrial customers throughout the
+            lifecycle of their measurement and automation systems — from selecting the right technology and
+            engineering the application to installation, commissioning, calibration, maintenance,
+            troubleshooting, and technical support.
+          </p>
         </div>
       </section>
 
@@ -71,7 +150,7 @@ export default function Services() {
                     isActive ? 'text-white' : 'text-brand-navy dark:text-white/85'
                   }`}
                 >
-                  {t.servicesPage.items[id].tab}
+                  {SERVICES[id].tab}
                 </span>
               </button>
             );
@@ -108,10 +187,10 @@ export default function Services() {
       {/* In the field gallery */}
       <section className="mx-auto max-w-7xl px-6 pb-4 lg:px-12 xl:px-16">
         <h2 className="reveal text-center font-heading text-2xl font-bold text-brand-blue dark:text-sky-300 sm:text-3xl">
-          {t.servicesPage.inTheField}
+          In The Field
         </h2>
         <div className="reveal mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3" style={{ transitionDelay: '120ms' }}>
-          {t.servicesPage.gallery.map((alt, index) => (
+          {GALLERY_ALTS.map((alt, index) => (
             <div key={alt} className="overflow-hidden rounded-lg shadow-lg">
               <img
                 src={GALLERY_IMAGES[index]}
@@ -126,13 +205,14 @@ export default function Services() {
       {/* Industries we serve */}
       <section className="mx-auto max-w-5xl px-6 py-20 text-center lg:px-12 xl:px-16 lg:py-24">
         <h2 className="reveal font-heading text-2xl font-bold text-brand-blue dark:text-sky-300 sm:text-3xl">
-          {t.servicesPage.industriesHeading}
+          Industries We Serve
         </h2>
         <p className="reveal mx-auto mt-4 max-w-2xl leading-relaxed text-brand-navy/80 dark:text-white/75" style={{ transitionDelay: '80ms' }}>
-          {t.servicesPage.industriesIntro}
+          Our customers are process-driven industrial businesses — organizations where materials, ingredients, or
+          resources pass through a process to produce a final product or output.
         </p>
         <div className="reveal mt-8 flex flex-wrap justify-center gap-3" style={{ transitionDelay: '140ms' }}>
-          {t.servicesPage.industries.map((industry) => (
+          {INDUSTRIES.map((industry) => (
             <span
               key={industry}
               className="rounded-full border border-brand-blue/25 px-5 py-2 font-heading text-sm font-medium text-brand-blue dark:border-white/20 dark:text-sky-300"
@@ -142,22 +222,28 @@ export default function Services() {
           ))}
         </div>
         <p className="reveal mx-auto mt-8 max-w-2xl text-sm leading-relaxed text-brand-navy/60 dark:text-white/60" style={{ transitionDelay: '200ms' }}>
-          {t.servicesPage.industriesFooter}
+          Our understanding of industrial processes allows us to focus not only on the instrument itself, but on
+          the measurement challenge and the operational requirement behind it.
         </p>
       </section>
 
       {/* Closing CTA */}
       <section className="bg-brand-light py-16 dark:bg-brand-dark-surface-2 lg:py-20">
         <div className="reveal mx-auto max-w-3xl px-6 text-center lg:px-12 xl:px-16">
-          <h2 className="font-heading text-2xl font-bold text-brand-navy dark:text-white sm:text-3xl">{t.servicesPage.closingHeading}</h2>
-          <p className="mt-4 leading-relaxed text-brand-navy/80 dark:text-white/75">{t.servicesPage.closingText}</p>
+          <h2 className="font-heading text-2xl font-bold text-brand-navy dark:text-white sm:text-3xl">
+            Have an Instrumentation or Automation Challenge?
+          </h2>
+          <p className="mt-4 leading-relaxed text-brand-navy/80 dark:text-white/75">
+            Talk to our engineering team about your measurement requirements, instrumentation needs, calibration
+            requirements, or industrial automation project.
+          </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <RouterLink
               href="/contact"
               className="group inline-flex items-center gap-2 rounded-lg bg-brand-orange px-7 py-3 font-heading text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:brightness-110"
             >
-              {t.servicesPage.closingCta}
-              <ArrowIcon className="h-7 w-7 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+              Talk to Our Engineering Team
+              <ArrowIcon className="h-7 w-7 transition-transform duration-300 group-hover:translate-x-1" />
             </RouterLink>
           </div>
         </div>

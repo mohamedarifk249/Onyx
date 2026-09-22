@@ -2,18 +2,17 @@ import { useState } from 'react';
 import onyxLogo from '../assets/images/onyx-logo.png';
 import { RouterLink, useRouter } from '../router';
 import { useSiteSettings } from '../context/SiteSettings';
-import { useT } from '../i18n/useT';
-import { LanguageIcon, SunIcon, MoonIcon } from '../components/UtilityIcons';
+import { SunIcon, MoonIcon } from '../components/UtilityIcons';
 
 const NAV_ITEMS = [
-  { key: 'home', href: '/' },
-  { key: 'services', href: '/services' },
-  { key: 'about', href: '/about' },
-  { key: 'certifications', href: '/certifications' },
-  { key: 'contact', href: '/contact' },
+  { key: 'home', label: 'Home', href: '/' },
+  { key: 'services', label: 'Services', href: '/services' },
+  { key: 'about', label: 'About Us', href: '/about' },
+  { key: 'certifications', label: 'Certifications', href: '/certifications' },
+  { key: 'contact', label: 'Contact', href: '/contact' },
 ];
 
-/** Small circular icon button shared by the language + theme toggles. */
+/** Small circular icon button used by the theme toggle. */
 function IconToggle({ onClick, label, children }) {
   return (
     <button
@@ -31,11 +30,10 @@ function IconToggle({ onClick, label, children }) {
 export default function Navbar() {
   const { path } = useRouter();
   const [open, setOpen] = useState(false);
-  const { theme, toggleTheme, lang, toggleLang } = useSiteSettings();
-  const t = useT();
+  const { theme, toggleTheme } = useSiteSettings();
+  const isDark = theme === 'dark';
 
   const isActive = (item) => item.href === path;
-  const isDark = theme === 'dark';
 
   return (
     <header className="sticky top-0 z-50 bg-brand-light/75 backdrop-blur-xl backdrop-saturate-150 shadow-sm shadow-brand-navy/5 dark:bg-brand-dark-bg/80 dark:shadow-black/20">
@@ -54,30 +52,22 @@ export default function Navbar() {
                   isActive(item) ? 'after:w-full' : 'after:w-0 hover:after:w-full'
                 }`}
               >
-                {t.nav[item.key]}
+                {item.label}
               </RouterLink>
             </li>
           ))}
         </ul>
 
         <div className="flex items-center gap-1.5">
-          {/* Language + theme toggles (always visible, desktop and mobile) */}
-          <IconToggle onClick={toggleLang} label={lang === 'en' ? t.nav.switchToArabic : t.nav.switchToEnglish}>
-            <span className="flex items-center gap-1">
-              <LanguageIcon className="h-[18px] w-[18px]" />
-              <span className="font-heading text-[10px] font-bold uppercase tracking-wide">
-                {lang === 'en' ? 'AR' : 'EN'}
-              </span>
-            </span>
-          </IconToggle>
-          <IconToggle onClick={toggleTheme} label={isDark ? t.nav.switchToLight : t.nav.switchToDark}>
+          {/* Theme toggle (always visible, desktop and mobile) */}
+          <IconToggle onClick={toggleTheme} label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
             {isDark ? <SunIcon className="h-[18px] w-[18px]" /> : <MoonIcon className="h-[18px] w-[18px]" />}
           </IconToggle>
 
           {/* Mobile toggle */}
           <button
             className="flex flex-col gap-1.5 p-1.5 lg:hidden"
-            aria-label={t.nav.toggleMenu}
+            aria-label="Toggle menu"
             onClick={() => setOpen((v) => !v)}
           >
             <span className={`h-0.5 w-6 bg-brand-navy transition-transform duration-300 dark:bg-white ${open ? 'translate-y-2 rotate-45' : ''}`} />
@@ -105,7 +95,7 @@ export default function Navbar() {
                     : 'text-brand-navy dark:text-white/85'
                 }`}
               >
-                {t.nav[item.key]}
+                {item.label}
               </RouterLink>
             </li>
           ))}
